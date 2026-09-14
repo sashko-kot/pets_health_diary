@@ -2,12 +2,12 @@ from datetime import date
 
 #данные сущности "питомец" и "хозяин"
 owner_name = "Алексей"
-pet_name = "Барсик"
+pet_name = "шуша"
 pet_weight_kg = 4.5
 recommended_weight_kg = 4.0
 
 #данные сущности "план кормления"
-base_feed_rate_grams = 50  # Норма на 1 кг веса
+base_feed_rate_grams = 20  # Норма на 1 кг веса
 
 #данные сущности "график уборки"
 last_cleaning_date = date(2026, 9, 9)
@@ -38,10 +38,10 @@ def check_weight_status(current_w, target_w):
 
 
 print(f"Владелец: {owner_name}")
-print(f" Питомец: {pet_name}\n")
+print(f" Питомец: {pet_name}")
 
 daily_feed = calculate_daily_feed(pet_weight_kg, base_feed_rate_grams)
-print(f"Суточная норма корма: {daily_feed} г.")
+print(f"Суточная норма корма: {daily_feed}.")
 
 cleaning_info = check_cleaning_status(
     last_cleaning_date, cleaning_interval_days, current_date
