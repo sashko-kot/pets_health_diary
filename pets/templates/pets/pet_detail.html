@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{% if pet %}{{ pet.name }} | Питомец{% else %}Питомец не найден{% endif %}{% endblock %}
+
+{% block content %}
+{% if pet %}
+    <p class="eyebrow">Карточка питомца</p>
+    <div class="detail-panel p-4 p-lg-5">
+        <div class="d-flex justify-content-between flex-wrap gap-3">
+            <div>
+                <h1>{{ pet.name }}</h1>
+                <p class="lead mb-2">{{ pet.species }}</p>
+                <p>Владелец: {{ owner.name }} <span class="text-muted">(ID {{ owner.id }})</span></p>
+            </div>
+            <div class="text-lg-end">
+                <p class="mb-1">Текущий вес</p>
+                <p class="display-6 fw-semibold">{{ weight_display }}</p>
+            </div>
+        </div>
+        <div class="alert alert-info mb-0">
+            {{ pet.weight_status|default:"Оценка веса пока не указана." }}
+        </div>
+    </div>
+
+    <section class="mt-5">
+        <h2 class="h3 mb-3">История здоровья <span class="text-muted">({{ records|length }})</span></h2>
+        <div class="list-group">
+            {% for item in records %}
+                <a
+                    class="list-group-item list-group-item-action record-row"
+                    href="{% url 'records:record_detail' item.record.id %}"
+                >
+                    <div class="d-flex justify-content-between flex-wrap gap-2">
+                        <strong>{{ item.record.recorded_on|date:"d.m.Y" }}</strong>
+                        <span>{{ item.weight_display }}</span>
+                    </div>
+                    <span>{{ item.record.activity }}</span>
+                </a>
+            {% empty %}
+                <p class="empty-state p-3 mb-0">Записей о здоровье пока нет.</p>
+            {% endfor %}
+        </div>
+    </section>
+{% else %}
+    <section class="empty-state text-center py-5">
+        <p class="eyebrow">Ошибка 404</p>
+        <h1 class="text-danger">Питомец не найден</h1>
+        <p>Питомца с таким идентификатором нет в дневнике.</p>
+        <a href="{% url 'pets:pets_list' %}" class="btn btn-outline-primary">
+            К списку питомцев
+        </a>
+    </section>
+{% endif %}
+{% endblock %}

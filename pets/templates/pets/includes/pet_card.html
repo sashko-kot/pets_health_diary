@@ -1,0 +1,12 @@
+<article class="pet-card h-100">
+    <div class="pet-card__top">
+        <span class="pet-mark" aria-hidden="true">♥</span>
+        <span class="badge text-bg-light">{{ pet.species|default:"Грызун" }}</span>
+    </div>
+    <h2 class="h4 mt-3">{{ pet.name|default:"Без имени" }}</h2>
+    <p class="mb-1">Хозяин: {{ owner.name }} <span class="text-muted">(#{{ owner.id }})</span></p>
+    <p class="mb-3">Вес: {{ weight_display }}</p>
+    <a href="{% url 'pets:pet_detail' pet.id %}" class="btn btn-sm btn-outline-primary">
+        Открыть карточку
+    </a>
+</article>

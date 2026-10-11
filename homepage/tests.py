@@ -33,16 +33,20 @@ from storage import (
 
 class PageTests(TestCase):
     def test_homepage_is_available(self):
-        response = self.client.get(reverse("index"))
+        response = self.client.get(reverse("homepage:index"))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Дневник здоровья грызунов")
-        self.assertContains(response, '<link rel="icon" href="data:,">')
+        self.assertTemplateUsed(response, "homepage/index.html")
+        self.assertContains(response, "/static/homepage/css/style.css")
+        self.assertContains(response, "/static/homepage/js/main.js")
+        self.assertContains(response, "/static/homepage/img/logo.svg")
 
     def test_pets_list_is_available(self):
-        response = self.client.get(reverse("pets_list"))
+        response = self.client.get(reverse("pets:pets_list"))
 
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "pets/pets_list.html")
         self.assertContains(response, "Шуша")
         self.assertContains(response, "Пончик")
         self.assertContains(response, "Шиншилла")
@@ -50,7 +54,7 @@ class PageTests(TestCase):
         self.assertContains(response, "Мария")
 
     def test_pet_detail_is_available(self):
-        response = self.client.get(reverse("pet_detail", args=[1]))
+        response = self.client.get(reverse("pets:pet_detail", args=[1]))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Шуша")
@@ -58,13 +62,13 @@ class PageTests(TestCase):
         self.assertContains(response, "История здоровья")
 
     def test_missing_pet_detail_returns_404(self):
-        response = self.client.get(reverse("pet_detail", args=[999]))
+        response = self.client.get(reverse("pets:pet_detail", args=[999]))
 
         self.assertEqual(response.status_code, 404)
         self.assertContains(response, "Питомец не найден", status_code=404)
 
     def test_records_list_is_available(self):
-        response = self.client.get(reverse("records_list"))
+        response = self.client.get(reverse("records:records_list"))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Запись от 12.10.2026")
@@ -161,27 +165,38 @@ class PageTests(TestCase):
                 self.assertEqual(load_records(), records)
 
     def test_pet_detail_shows_owner_id(self):
-        response = self.client.get(reverse("pet_detail", args=[9]))
+        response = self.client.get(reverse("pets:pet_detail", args=[9]))
 
         self.assertContains(response, "Мария")
         self.assertContains(response, "(ID 9)")
 
     def test_pet_weights_are_displayed_in_grams(self):
-        response = self.client.get(reverse("pet_detail", args=[3]))
+        response = self.client.get(reverse("pets:pet_detail", args=[3]))
 
         self.assertContains(response, "35 г")
 
     def test_record_detail_is_available(self):
-        response = self.client.get(reverse("record_detail", args=[1]))
+        response = self.client.get(reverse("records:record_detail", args=[1]))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Осмотр питомца Шуша")
 
     def test_missing_record_detail_returns_404(self):
-        response = self.client.get(reverse("record_detail", args=[999]))
+        detail_url = reverse("records:record_detail", args=[999])
+        response = self.client.get(detail_url)
 
         self.assertEqual(response.status_code, 404)
         self.assertContains(response, "Запись не найдена", status_code=404)
+
+    def test_empty_pet_list_uses_empty_template_branch(self):
+        with (
+            patch("pets.views.load_pets", return_value=[]),
+            patch("pets.views.load_owners", return_value=[]),
+        ):
+            response = self.client.get(reverse("pets:pets_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Питомцев пока нет.")
 
     def test_not_found_page_uses_custom_handler(self):
         with self.settings(DEBUG=False, ALLOWED_HOSTS=["testserver"]):

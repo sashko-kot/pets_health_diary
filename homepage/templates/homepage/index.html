@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Главная | Дневник здоровья грызунов{% endblock %}
+
+{% block content %}
+<section class="hero-panel p-4 p-lg-5 rounded-4">
+    <p class="eyebrow">Забота каждый день</p>
+    <h1 class="display-5 fw-bold">Дневник здоровья грызунов</h1>
+    <p class="lead col-lg-9">
+        Удобное место, чтобы следить за весом, самочувствием и привычками
+        маленьких питомцев.
+    </p>
+    <p class="mb-4">
+        В дневнике {{ pet_count }} питомцев и {{ record_count }} записей
+        о здоровье.
+    </p>
+    <a href="{% url 'pets:pets_list' %}" class="btn btn-primary me-2">
+        Мои питомцы
+    </a>
+    <a href="{% url 'records:records_list' %}" class="btn btn-outline-primary">
+        Записи дневника
+    </a>
+</section>
+
+<section class="row g-3 mt-3" aria-label="Разделы дневника">
+    <div class="col-md-6">
+        <a class="feature-card d-block h-100 p-4" href="{% url 'pets:pets_list' %}">
+            <h2 class="h4">Карточки питомцев</h2>
+            <p class="mb-0">Вес, вид, хозяин и история наблюдений.</p>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a class="feature-card d-block h-100 p-4" href="{% url 'records:records_list' %}">
+            <h2 class="h4">Дневник здоровья</h2>
+            <p class="mb-0">Активность, аппетит, симптомы и замеры.</p>
+        </a>
+    </div>
+</section>
+{% endblock %}

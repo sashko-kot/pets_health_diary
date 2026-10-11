@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}{% if record %}Запись от {{ record.recorded_on|date:"d.m.Y" }}{% else %}Запись не найдена{% endif %}{% endblock %}
+
+{% block content %}
+{% if record %}
+    <p class="eyebrow">Запись дневника №{{ record.id }}</p>
+    <article class="detail-panel p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h1 class="h2">Осмотр питомца {{ pet.name }}</h1>
+                <p class="lead">{{ record.recorded_on|date:"d.m.Y" }}</p>
+            </div>
+            {% include "records/includes/symptom_status.html" with record=record %}
+        </div>
+        <dl class="row mt-4 mb-0">
+            <dt class="col-sm-4">Хозяин</dt>
+            <dd class="col-sm-8">{{ owner.name }} (ID {{ owner.id }})</dd>
+            <dt class="col-sm-4">Активность</dt>
+            <dd class="col-sm-8">{{ record.activity }}</dd>
+            <dt class="col-sm-4">Аппетит</dt>
+            <dd class="col-sm-8">{{ record.appetite }}</dd>
+            <dt class="col-sm-4">Симптомы</dt>
+            <dd class="col-sm-8">{{ record.symptoms|default:"Не указано" }}</dd>
+            <dt class="col-sm-4">Вес</dt>
+            <dd class="col-sm-8">{{ weight_display }}</dd>
+        </dl>
+        <a href="{% url 'pets:pet_detail' pet.id %}" class="btn btn-outline-primary mt-3">
+            Карточка питомца
+        </a>
+    </article>
+{% else %}
+    <section class="empty-state text-center py-5">
+        <p class="eyebrow">Ошибка 404</p>
+        <h1 class="text-danger">Запись не найдена</h1>
+        <p>Записи с таким идентификатором нет в дневнике.</p>
+        <a href="{% url 'records:records_list' %}" class="btn btn-outline-primary">
+            К дневнику здоровья
+        </a>
+    </section>
+{% endif %}
+{% endblock %}

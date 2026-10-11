@@ -1,0 +1,7 @@
+{% if record.symptoms|lower == "нет" %}
+    <span class="badge rounded-pill text-bg-success">Без симптомов</span>
+{% elif record.symptoms %}
+    <span class="badge rounded-pill text-bg-warning">{{ record.symptoms }}</span>
+{% else %}
+    <span class="badge rounded-pill text-bg-secondary">Не указано</span>
+{% endif %}

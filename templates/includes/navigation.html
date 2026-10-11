@@ -1,0 +1,37 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg site-navbar">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'homepage:index' %}">
+            <img
+                src="{% static 'homepage/img/logo.svg' %}"
+                alt=""
+                width="40"
+                height="40"
+            >
+            <span>ГрызЗдоровье</span>
+        </a>
+        <div class="navbar-nav flex-row flex-wrap align-items-center">
+            <a
+                class="nav-link {% if request.path == '/' %}active{% endif %}"
+                href="{% url 'homepage:index' %}"
+                {% if request.path == '/' %}aria-current="page"{% endif %}
+            >Главная</a>
+            <a
+                class="nav-link {% if '/pets/' in request.path %}active{% endif %}"
+                href="{% url 'pets:pets_list' %}"
+                {% if '/pets/' in request.path %}aria-current="page"{% endif %}
+            >Питомцы</a>
+            <a
+                class="nav-link {% if '/records/' in request.path %}active{% endif %}"
+                href="{% url 'records:records_list' %}"
+                {% if '/records/' in request.path %}aria-current="page"{% endif %}
+            >Дневник</a>
+            <button
+                class="btn btn-sm theme-toggle ms-lg-3"
+                type="button"
+                data-theme-toggle
+                aria-pressed="false"
+            >Тёмная тема</button>
+        </div>
+    </div>
+</nav>

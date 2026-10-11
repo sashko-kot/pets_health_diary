@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Дневник здоровья | Записи{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-4">
+    <div>
+        <p class="eyebrow mb-1">Наблюдения и осмотры</p>
+        <h1 class="mb-0">Дневник здоровья</h1>
+    </div>
+    <span class="badge rounded-pill text-bg-primary">
+        Записей: {{ records|length }}
+    </span>
+</div>
+<div class="list-group">
+    {% for item in records %}
+        <a
+            class="list-group-item list-group-item-action record-row"
+            href="{% url 'records:record_detail' item.record.id %}"
+        >
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <strong>Запись от {{ item.record.recorded_on|date:"d.m.Y" }} — {{ item.pet.name }}</strong>
+                {% include "records/includes/symptom_status.html" with record=item.record %}
+            </div>
+            <span>{{ item.record.activity }} · аппетит: {{ item.record.appetite }}</span>
+            <small class="text-muted">Хозяин: {{ item.owner.name }} · Вес: {{ item.weight_display }}</small>
+        </a>
+    {% empty %}
+        <p class="empty-state p-4 mb-0">Записей в дневнике пока нет.</p>
+    {% endfor %}
+</div>
+{% endblock %}

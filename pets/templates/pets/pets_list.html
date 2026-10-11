@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Питомцы | Дневник здоровья{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-4">
+    <div>
+        <p class="eyebrow mb-1">Наши маленькие друзья</p>
+        <h1 class="mb-0">Мои питомцы</h1>
+    </div>
+    <span class="badge rounded-pill text-bg-primary">
+        Всего: {{ pets|length }}
+    </span>
+</div>
+<div class="row g-3">
+    {% for item in pets %}
+        <div class="col-md-6 col-xl-4">
+            {% include "pets/includes/pet_card.html" with pet=item.pet owner=item.owner weight_display=item.weight_display %}
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <p class="empty-state p-4 mb-0">Питомцев пока нет.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
