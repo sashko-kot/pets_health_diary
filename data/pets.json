@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "Шуша",
+    "species": "Морская свинка",
+    "owner_id": 1,
+    "weight_kg": 0.85,
+    "recommended_weight_kg": 0.9
+  },
+  {
+    "id": 2,
+    "name": "Пончик",
+    "species": "Сирийский хомяк",
+    "owner_id": 2,
+    "weight_kg": 0.14,
+    "recommended_weight_kg": 0.15
+  },
+  {
+    "id": 3,
+    "name": "Ириска",
+    "species": "Хомяк Роборовского",
+    "owner_id": 3,
+    "weight_kg": 0.035,
+    "recommended_weight_kg": 0.03
+  },
+  {
+    "id": 4,
+    "name": "Буся",
+    "species": "Декоративная крыса",
+    "owner_id": 4,
+    "weight_kg": 0.42,
+    "recommended_weight_kg": 0.4
+  },
+  {
+    "id": 5,
+    "name": "Кнопка",
+    "species": "Домашняя мышь",
+    "owner_id": 5,
+    "weight_kg": 0.03,
+    "recommended_weight_kg": 0.03
+  },
+  {
+    "id": 6,
+    "name": "Снежок",
+    "species": "Шиншилла",
+    "owner_id": 6,
+    "weight_kg": 0.62,
+    "recommended_weight_kg": 0.6
+  },
+  {
+    "id": 7,
+    "name": "Гоша",
+    "species": "Дегу",
+    "owner_id": 7,
+    "weight_kg": 0.24,
+    "recommended_weight_kg": 0.25
+  },
+  {
+    "id": 8,
+    "name": "Рыжик",
+    "species": "Песчанка",
+    "owner_id": 8,
+    "weight_kg": 0.09,
+    "recommended_weight_kg": 0.09
+  },
+  {
+    "id": 9,
+    "name": "Милка",
+    "species": "Декоративная крыса",
+    "owner_id": 9,
+    "weight_kg": 0.38,
+    "recommended_weight_kg": 0.4
+  }
+]

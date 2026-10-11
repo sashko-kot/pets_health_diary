@@ -1,52 +1,61 @@
 from datetime import date
 
-#данные сущности "питомец" и "хозяин"
-owner_name = "Алексей"
-pet_name = "шуша"
-pet_weight_kg = 4.5
-recommended_weight_kg = 4.0
-
-#данные сущности "план кормления"
-base_feed_rate_grams = 20  # Норма на 1 кг веса
-
-#данные сущности "график уборки"
-last_cleaning_date = date(2026, 9, 9)
-cleaning_interval_days = 5
-current_date = date.today()
+from models.owners import find_owner_by_id, show_owners
+from models.pets import format_weight, show_pets
+from models.records import show_records, sort_records
+from storage import load_owners, load_pets, load_records
 
 
-#расчет суточной нормы корма
-def calculate_daily_feed(weight, rate):
+def calculate_daily_feed(weight: float, rate: float) -> float:
     return weight * rate
 
 
-#проверка необходимости уборки
-def check_cleaning_status(last_date, interval, today):
+def check_cleaning_status(
+    last_date: date,
+    interval: int,
+    today: date,
+) -> str:
     days_passed = (today - last_date).days
     if days_passed >= interval:
         return "Пора провести уборку!"
-    return f"Уборка не требуется. Дней до следующей уборки: {interval - days_passed}"
+    days_remaining = interval - days_passed
+    return f"Уборка не требуется. Дней до следующей уборки: {days_remaining}"
 
 
-#проверка веса питомца
-def check_weight_status(current_w, target_w):
-    if current_w > target_w:
-        return "Есть избыточный вес, требуется корректировка рациона."
-    elif current_w < target_w:
-        return "Вес ниже нормы."
-    return "Вес в норме!"
+def main() -> None:
+    owners = load_owners()
+    pets = load_pets()
+    records = load_records()
+
+    print("Хозяева:")
+    show_owners(owners)
+
+    print("\nПитомцы:")
+    show_pets(pets)
+
+    print("\nЗаписи дневника:")
+    show_records(sort_records(records))
+
+    if pets:
+        pet = pets[0]
+        owner = find_owner_by_id(owners, pet.owner_id)
+        if owner is None:
+            raise ValueError(
+                f"Pet {pet.id} refers to missing owner {pet.owner_id}"
+            )
+        daily_feed = calculate_daily_feed(pet.weight_kg, 20)
+        print(f"\nПитомец: {pet.name}; хозяин: {owner.name}")
+        print(
+            "Суточная норма корма по расчёту проекта: "
+            f"{daily_feed:.1f} г."
+        )
+        print(f"Текущий вес: {format_weight(pet.weight_kg)}.")
+
+    print(
+        "\nСтатус уборки клетки: "
+        f"{check_cleaning_status(date(2026, 9, 9), 5, date.today())}"
+    )
 
 
-print(f"Владелец: {owner_name}")
-print(f" Питомец: {pet_name}")
-
-daily_feed = calculate_daily_feed(pet_weight_kg, base_feed_rate_grams)
-print(f"Суточная норма корма: {daily_feed}.")
-
-cleaning_info = check_cleaning_status(
-    last_cleaning_date, cleaning_interval_days, current_date
-)
-print(f"Статус уборки: {cleaning_info}")
-
-weight_info = check_weight_status(pet_weight_kg, recommended_weight_kg)
-print(f"Анализ веса: {weight_info}")
+if __name__ == "__main__":
+    main()

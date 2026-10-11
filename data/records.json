@@ -1,0 +1,164 @@
+[
+  {
+    "id": 1,
+    "pet_id": 1,
+    "recorded_on": "2026-10-12",
+    "activity": "Активна",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.85
+  },
+  {
+    "id": 2,
+    "pet_id": 1,
+    "recorded_on": "2026-10-05",
+    "activity": "Обычная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.84
+  },
+  {
+    "id": 3,
+    "pet_id": 2,
+    "recorded_on": "2026-10-11",
+    "activity": "Активный ночью",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.14
+  },
+  {
+    "id": 4,
+    "pet_id": 2,
+    "recorded_on": "2026-10-04",
+    "activity": "Обычная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.14
+  },
+  {
+    "id": 5,
+    "pet_id": 3,
+    "recorded_on": "2026-10-10",
+    "activity": "Подвижная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.035
+  },
+  {
+    "id": 6,
+    "pet_id": 3,
+    "recorded_on": "2026-10-03",
+    "activity": "Обычная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.034
+  },
+  {
+    "id": 7,
+    "pet_id": 4,
+    "recorded_on": "2026-10-12",
+    "activity": "Активная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.42
+  },
+  {
+    "id": 8,
+    "pet_id": 4,
+    "recorded_on": "2026-10-06",
+    "activity": "Обычная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.41
+  },
+  {
+    "id": 9,
+    "pet_id": 5,
+    "recorded_on": "2026-10-09",
+    "activity": "Активная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.03
+  },
+  {
+    "id": 10,
+    "pet_id": 5,
+    "recorded_on": "2026-10-02",
+    "activity": "Обычная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.03
+  },
+  {
+    "id": 11,
+    "pet_id": 6,
+    "recorded_on": "2026-10-11",
+    "activity": "Активный ночью",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.62
+  },
+  {
+    "id": 12,
+    "pet_id": 6,
+    "recorded_on": "2026-10-04",
+    "activity": "Обычная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.61
+  },
+  {
+    "id": 13,
+    "pet_id": 7,
+    "recorded_on": "2026-10-10",
+    "activity": "Подвижный",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.24
+  },
+  {
+    "id": 14,
+    "pet_id": 7,
+    "recorded_on": "2026-10-03",
+    "activity": "Обычная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.24
+  },
+  {
+    "id": 15,
+    "pet_id": 8,
+    "recorded_on": "2026-10-12",
+    "activity": "Активный",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.09
+  },
+  {
+    "id": 16,
+    "pet_id": 8,
+    "recorded_on": "2026-10-05",
+    "activity": "Обычная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.09
+  },
+  {
+    "id": 17,
+    "pet_id": 9,
+    "recorded_on": "2026-10-12",
+    "activity": "Активная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.38
+  },
+  {
+    "id": 18,
+    "pet_id": 9,
+    "recorded_on": "2026-10-05",
+    "activity": "Обычная",
+    "appetite": "Хороший",
+    "symptoms": "Нет",
+    "weight_kg": 0.37
+  }
+]
