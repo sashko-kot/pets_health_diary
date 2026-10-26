@@ -12,11 +12,21 @@
         Всего: {{ pets|length }}
     </span>
 </div>
+<form method="get" class="row g-2 mb-4">
+    <div class="col-sm-8 col-lg-6">
+        <label class="form-label" for="species">Вид питомца</label>
+        <input class="form-control" id="species" name="species" value="{{ species }}">
+    </div>
+    <div class="col-sm-4 align-self-end">
+        <button class="btn btn-outline-primary" type="submit">Фильтровать</button>
+    </div>
+</form>
 <div class="row g-3">
     {% for item in pets %}
         <div class="col-md-6 col-xl-4">
             {% include "pets/includes/pet_card.html" with pet=item.pet owner=item.owner weight_display=item.weight_display %}
         </div>
+    
     {% empty %}
         <div class="col-12">
             <p class="empty-state p-4 mb-0">Питомцев пока нет.</p>

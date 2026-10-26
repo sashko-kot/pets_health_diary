@@ -1,12 +1,15 @@
 from django.shortcuts import render
 
-from storage import load_pets, load_records
+from db.database import get_connection, load_queries
 
 
 def index(request):
+    query = load_queries()["total_counts"]
+    with get_connection() as connection:
+        counts = connection.execute(query).fetchone()
     context = {
-        "pet_count": len(load_pets()),
-        "record_count": len(load_records()),
+        "pet_count": counts["pet_count"],
+        "record_count": counts["record_count"],
     }
     return render(request, "homepage/index.html", context)
 

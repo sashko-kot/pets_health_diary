@@ -26,6 +26,8 @@
                 href="{% url 'records:records_list' %}"
                 {% if '/records/' in request.path %}aria-current="page"{% endif %}
             >Дневник</a>
+            <a class="nav-link" href="{% url 'records:records_search' %}">Поиск симптомов</a>
+            <a class="nav-link" href="{% url 'records:statistics' %}">Статистика</a>
             <button
                 class="btn btn-sm theme-toggle ms-lg-3"
                 type="button"

@@ -190,9 +190,14 @@ class PageTests(TestCase):
 
     def test_empty_pet_list_uses_empty_template_branch(self):
         with (
-            patch("pets.views.load_pets", return_value=[]),
-            patch("pets.views.load_owners", return_value=[]),
+            patch(
+                "pets.views.load_queries",
+                return_value={"list_pets": "SELECT 1"},
+            ),
+            patch("pets.views.get_connection") as get_connection,
         ):
+            get_connection.return_value.__enter__.return_value.execute.\
+                return_value.fetchall.return_value = []
             response = self.client.get(reverse("pets:pets_list"))
 
         self.assertEqual(response.status_code, 200)

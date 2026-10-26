@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Поиск по симптомам | Дневник здоровья{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Поиск записей по симптомам</h1>
+<form method="get" class="row g-2 mb-4">
+    <div class="col-sm-8 col-lg-6">
+        <label class="form-label" for="symptom">Симптом</label>
+        <input class="form-control" id="symptom" name="symptom" value="{{ symptom }}">
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <label class="form-label" for="date_from">С даты</label>
+        <input class="form-control" type="date" id="date_from" name="date_from" value="{{ date_from }}">
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <label class="form-label" for="date_to">По дату</label>
+        <input class="form-control" type="date" id="date_to" name="date_to" value="{{ date_to }}">
+    </div>
+    <div class="col-sm-4 align-self-end">
+        <button class="btn btn-primary" type="submit">Найти</button>
+    </div>
+</form>
+{% if symptom or date_from and date_to %}
+<p>Найдено записей: {{ records|length }}</p>
+<div class="list-group">
+    {% for item in records %}
+    <a class="list-group-item list-group-item-action" href="{% url 'records:record_detail' item.record.id %}">
+        {{ item.record.recorded_on|date:"d.m.Y" }} — {{ item.pet.name }}:
+        {{ item.record.symptoms }}
+    </a>
+    {% empty %}
+    <p class="empty-state p-4">По этому запросу записей нет.</p>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

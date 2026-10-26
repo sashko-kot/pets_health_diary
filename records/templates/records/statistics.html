@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Статистика | Дневник здоровья{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Статистика здоровья питомцев</h1>
+<section class="mb-5">
+    <h2 class="h3">Записи и динамика веса</h2>
+    <div class="row g-3">
+        {% for item in pet_statistics %}
+        <div class="col-md-6 col-xl-4">
+            <article class="feature-card h-100 p-4">
+                <h3 class="h5">{{ item.pet_name }}</h3>
+                <p>Записей: {{ item.records_count }}</p>
+                {% if item.average_weight != None %}
+                <p class="mb-0">Средний вес: {{ item.average_weight|floatformat:3 }} кг</p>
+                {% endif %}
+            </article>
+        </div>
+        {% empty %}
+        <p>Данные отсутствуют.</p>
+        {% endfor %}
+    </div>
+</section>
+<section class="mb-5">
+    <h2 class="h3">Питомцы по хозяевам</h2>
+    <ul class="list-group">
+        {% for item in owner_statistics %}
+        <li class="list-group-item d-flex justify-content-between">
+            <span>{{ item.owner_name }}</span><span>{{ item.pets_count }}</span>
+        </li>
+        {% empty %}
+        <li class="list-group-item">Данные отсутствуют.</li>
+        {% endfor %}
+    </ul>
+</section>
+<section>
+    <h2 class="h3">Часто встречающиеся симптомы</h2>
+    <ul class="list-group">
+        {% for item in symptom_statistics %}
+        <li class="list-group-item d-flex justify-content-between">
+            <span>{{ item.symptoms }}</span><span>{{ item.records_count }}</span>
+        </li>
+        {% empty %}
+        <li class="list-group-item">Симптомы в записях не указаны.</li>
+        {% endfor %}
+    </ul>
+</section>
+{% endblock %}
