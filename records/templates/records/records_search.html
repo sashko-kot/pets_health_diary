@@ -21,7 +21,10 @@
         <button class="btn btn-primary" type="submit">Найти</button>
     </div>
 </form>
-{% if symptom or date_from and date_to %}
+{% if error %}
+<p class="text-danger" role="alert">{{ error }}</p>
+{% endif %}
+{% if symptom or date_from or date_to %}
 <p>Найдено записей: {{ records|length }}</p>
 <div class="list-group">
     {% for item in records %}

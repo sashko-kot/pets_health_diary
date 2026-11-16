@@ -1,11 +1,17 @@
+import hashlib
 from datetime import date
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.text import slugify
 
+from owners.models import Owner as OwnerModel
+from pets.models import Pet as PetModel
+from records.models import HealthRecord as HealthRecordModel
 from models.owners import Owner, add_owner, find_owner
 from models.pets import (
     Pet,
@@ -32,6 +38,37 @@ from storage import (
 
 
 class PageTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        OwnerModel.objects.bulk_create([
+            OwnerModel(id=owner.id, name=owner.name, email=owner.email)
+            for owner in load_owners()
+        ])
+        PetModel.objects.bulk_create([
+            PetModel(
+                id=pet.id,
+                name=pet.name,
+                slug=slugify(pet.name, allow_unicode=True),
+                species=pet.species,
+                owner_id=pet.owner_id,
+                weight_kg=pet.weight_kg,
+                recommended_weight_kg=pet.recommended_weight_kg,
+            )
+            for pet in load_pets()
+        ])
+        HealthRecordModel.objects.bulk_create([
+            HealthRecordModel(
+                id=record.id,
+                pet_id=record.pet_id,
+                recorded_on=record.recorded_on,
+                activity=record.activity,
+                appetite=record.appetite,
+                symptoms=record.symptoms,
+                weight_kg=record.weight_kg,
+            )
+            for record in load_records()
+        ])
+
     def test_homepage_is_available(self):
         response = self.client.get(reverse("homepage:index"))
 
@@ -71,10 +108,162 @@ class PageTests(TestCase):
         response = self.client.get(reverse("records:records_list"))
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["total_records"], 18)
         self.assertContains(response, "Запись от 12.10.2026")
         self.assertContains(response, "Шуша")
         self.assertContains(response, "Пончик")
         self.assertContains(response, "Рыжик")
+
+    def test_records_list_filters_sorts_and_paginates(self):
+        response = self.client.get(
+            reverse("records:records_list"),
+            {
+                "date_from": "2026-10-04",
+                "pet": "1",
+                "owner": "1",
+                "sort": "date",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["total_records"], 2)
+        self.assertContains(response, "Шуша")
+
+        response = self.client.get(
+            reverse("records:records_list"),
+            {
+                "date_from": "2026-10-04",
+                "sort": "pet",
+                "page": "2",
+            },
+        )
+        self.assertEqual(response.context["page_obj"].number, 2)
+        self.assertContains(response, "date_from=2026-10-04")
+        self.assertContains(response, "sort=pet")
+        self.assertContains(response, "page=1")
+
+    def test_records_list_handles_invalid_dates_and_page_numbers(self):
+        response = self.client.get(
+            reverse("records:records_list"),
+            {"date_from": "not-a-date"},
+        )
+        self.assertEqual(response.context["total_records"], 0)
+        self.assertContains(response, "Укажите корректный диапазон дат.")
+
+        response = self.client.get(
+            reverse("records:records_list"),
+            {"page": "not-a-page"},
+        )
+        self.assertEqual(response.context["page_obj"].number, 1)
+
+    def test_records_search_combines_symptom_and_date_filters(self):
+        response = self.client.get(
+            reverse("records:records_search"),
+            {
+                "symptom": "Нет",
+                "date_from": "2026-10-10",
+                "date_to": "2026-10-12",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["records"]), 8)
+
+    def test_statistics_page_uses_orm_aggregates(self):
+        response = self.client.get(reverse("records:statistics"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["pet_statistics"]), 9)
+        self.assertEqual(
+            response.context["pet_statistics"][0]["records_count"],
+            2,
+        )
+        self.assertEqual(
+            response.context["owner_statistics"][0]["pets_count"],
+            1,
+        )
+        self.assertContains(response, "Часто встречающиеся симптомы")
+        self.assertContains(
+            response,
+            "Сводная таблица: хозяева, питомцы и записи",
+        )
+        self.assertEqual(len(response.context["record_summary"]), 18)
+        first_record = response.context["record_summary"][0]
+        related_record = HealthRecordModel.objects.get(pk=first_record["id"])
+        self.assertEqual(
+            first_record["owner_name"],
+            related_record.pet.owner.name,
+        )
+        self.assertEqual(
+            first_record["owner_email"],
+            related_record.pet.owner.email,
+        )
+        self.assertTrue(first_record["pet_slug"])
+
+    def test_pet_slug_url_and_record_queryset_methods(self):
+        pet = PetModel.objects.get(pk=1)
+        self.assertEqual(pet.get_absolute_url(), reverse(
+            "pets:pet_detail_by_slug",
+            kwargs={"slug": pet.slug},
+        ))
+        self.assertEqual(
+            self.client.get(pet.get_absolute_url()).status_code,
+            200,
+        )
+
+        owner = OwnerModel.objects.get(pk=pet.owner_id)
+        recorded_on = date(2026, 10, 12)
+        records = HealthRecordModel.objects.for_owner(owner).for_date(
+            recorded_on
+        )
+        self.assertTrue(records.exists())
+        self.assertTrue(all(item.pet.owner_id == owner.pk for item in records))
+
+    def test_admin_inlines_show_related_pets_and_health_records(self):
+        admin_user = get_user_model().objects.create_superuser(
+            username="practice-admin",
+            email="admin@example.test",
+            password="test-password",
+        )
+        self.client.force_login(admin_user)
+
+        owner_response = self.client.get(
+            reverse("admin:owners_owner_change", args=[1])
+        )
+        self.assertEqual(owner_response.status_code, 200)
+        self.assertContains(owner_response, "Шуша")
+
+        pet_response = self.client.get(
+            reverse("admin:pets_pet_change", args=[1])
+        )
+        self.assertEqual(pet_response.status_code, 200)
+        self.assertContains(pet_response, "health_records")
+        self.assertContains(pet_response, "Дата наблюдения")
+
+        record_response = self.client.get(
+            reverse("admin:records_healthrecord_changelist")
+        )
+        self.assertEqual(record_response.status_code, 200)
+        search_response = self.client.get(
+            reverse("admin:records_healthrecord_changelist"),
+            {"q": OwnerModel.objects.get(pk=1).name},
+        )
+        self.assertEqual(search_response.status_code, 200)
+        self.assertGreater(search_response.context["cl"].result_count, 0)
+
+    def test_duplicate_pet_names_receive_unique_slugs(self):
+        owner = OwnerModel.objects.get(pk=1)
+        pet_fields = {
+            "name": "Проверка slug",
+            "species": "Хомяк",
+            "owner": owner,
+            "weight_kg": 0.1,
+            "recommended_weight_kg": 0.12,
+        }
+        first_pet = PetModel.objects.create(**pet_fields)
+        second_pet = PetModel.objects.create(**pet_fields)
+
+        self.assertNotEqual(first_pet.slug, second_pet.slug)
+        self.assertEqual(second_pet.slug, f"{first_pet.slug}-2")
 
     def test_json_data_has_rodents_and_records_for_every_pet(self):
         pets = load_pets()
@@ -189,19 +378,65 @@ class PageTests(TestCase):
         self.assertContains(response, "Запись не найдена", status_code=404)
 
     def test_empty_pet_list_uses_empty_template_branch(self):
-        with (
-            patch(
-                "pets.views.load_queries",
-                return_value={"list_pets": "SELECT 1"},
-            ),
-            patch("pets.views.get_connection") as get_connection,
-        ):
-            get_connection.return_value.__enter__.return_value.execute.\
-                return_value.fetchall.return_value = []
-            response = self.client.get(reverse("pets:pets_list"))
+        response = self.client.get(
+            reverse("pets:pets_list"),
+            {"species": "несуществующий вид"},
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Питомцев пока нет.")
+
+    def test_orm_models_support_related_crud_operations(self):
+        owner = OwnerModel.objects.create(
+            name="Тестовый хозяин",
+            email="orm-test@example.test",
+        )
+        pet = PetModel.objects.create(
+            name="Тестовый питомец",
+            species="Хомяк",
+            owner=owner,
+            weight_kg=0.1,
+            recommended_weight_kg=0.12,
+        )
+        record = HealthRecordModel.objects.create(
+            pet=pet,
+            recorded_on=date(2026, 10, 13),
+            activity="Активная",
+            appetite="Хороший",
+            symptoms="Нет",
+            weight_kg=0.1,
+        )
+
+        self.assertEqual(record.pet.owner, owner)
+        self.assertEqual(owner.pets.get(), pet)
+        record.appetite = "Сниженный"
+        record.save(update_fields=["appetite"])
+        self.assertEqual(
+            HealthRecordModel.objects.get(pk=record.pk).appetite,
+            "Сниженный",
+        )
+        record.delete()
+        self.assertFalse(
+            HealthRecordModel.objects.filter(pk=record.pk).exists()
+        )
+
+    def test_legacy_database_import_is_repeatable(self):
+        from db.import_sqlite_to_orm import SOURCE_DB, import_sqlite_to_orm
+
+        source_hash = hashlib.sha256(SOURCE_DB.read_bytes()).digest()
+        first_counts = import_sqlite_to_orm()
+        second_counts = import_sqlite_to_orm()
+
+        self.assertEqual(first_counts, {
+            "owners": 9,
+            "pets": 9,
+            "health_records": 18,
+        })
+        self.assertEqual(second_counts, first_counts)
+        self.assertEqual(
+            hashlib.sha256(SOURCE_DB.read_bytes()).digest(),
+            source_hash,
+        )
 
     def test_not_found_page_uses_custom_handler(self):
         with self.settings(DEBUG=False, ALLOWED_HOSTS=["testserver"]):

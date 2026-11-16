@@ -9,9 +9,57 @@
         <h1 class="mb-0">Дневник здоровья</h1>
     </div>
     <span class="badge rounded-pill text-bg-primary">
-        Записей: {{ records|length }}
+        Записей: {{ total_records }}
     </span>
 </div>
+<form method="get" class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <label class="form-label" for="date_from">С даты</label>
+        <input class="form-control" type="date" id="date_from" name="date_from" value="{{ date_from }}">
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <label class="form-label" for="date_to">По дату</label>
+        <input class="form-control" type="date" id="date_to" name="date_to" value="{{ date_to }}">
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <label class="form-label" for="pet">Питомец</label>
+        <select class="form-select" id="pet" name="pet">
+            <option value="">Все питомцы</option>
+            {% for pet in pets %}
+            <option value="{{ pet.pk }}" {% if selected_pet == pet.pk|stringformat:"s" %}selected{% endif %}>
+                {{ pet.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <label class="form-label" for="owner">Хозяин</label>
+        <select class="form-select" id="owner" name="owner">
+            <option value="">Все хозяева</option>
+            {% for owner in owners %}
+            <option value="{{ owner.pk }}" {% if selected_owner == owner.pk|stringformat:"s" %}selected{% endif %}>
+                {{ owner.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <label class="form-label" for="sort">Сортировать по</label>
+        <select class="form-select" id="sort" name="sort">
+            <option value="date" {% if sort == "date" %}selected{% endif %}>Дате</option>
+            <option value="pet" {% if sort == "pet" %}selected{% endif %}>Питомцу</option>
+            <option value="owner" {% if sort == "owner" %}selected{% endif %}>Хозяину</option>
+            <option value="weight" {% if sort == "weight" %}selected{% endif %}>Весу</option>
+        </select>
+    </div>
+    <div class="col-12">
+        <button class="btn btn-primary" type="submit">Применить</button>
+        <a class="btn btn-outline-secondary" href="{% url 'records:records_list' %}">Сбросить</a>
+    </div>
+</form>
+{% if error %}
+<p class="text-danger" role="alert">{{ error }}</p>
+{% endif %}
 <div class="list-group">
     {% for item in records %}
         <a
@@ -29,4 +77,33 @@
         <p class="empty-state p-4 mb-0">Записей в дневнике пока нет.</p>
     {% endfor %}
 </div>
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="mt-4" aria-label="Навигация по страницам">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="{% querystring page=page_obj.previous_page_number %}">Назад</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Назад</span></li>
+        {% endif %}
+        {% for page_number in page_obj.paginator.page_range %}
+        {% if page_number == page_obj.number %}
+        <li class="page-item active" aria-current="page"><span class="page-link">{{ page_number }}</span></li>
+        {% else %}
+        <li class="page-item">
+            <a class="page-link" href="{% querystring page=page_number %}">{{ page_number }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{% querystring page=page_obj.next_page_number %}">Далее</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Далее</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
 {% endblock %}

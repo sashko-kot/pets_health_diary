@@ -25,7 +25,7 @@
             <dt class="col-sm-4">Вес</dt>
             <dd class="col-sm-8">{{ weight_display }}</dd>
         </dl>
-        <a href="{% url 'pets:pet_detail' pet.id %}" class="btn btn-outline-primary mt-3">
+        <a href="{{ pet.get_absolute_url }}" class="btn btn-outline-primary mt-3">
             Карточка питомца
         </a>
     </article>

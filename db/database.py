@@ -9,7 +9,6 @@ QUERIES_PATH = BASE_DIR / "sql" / "queries.sql"
 
 
 class ClosingConnection(sqlite3.Connection):
-    """Commit or roll back on context exit, then close the connection."""
 
     def __exit__(self, exc_type, exc_value, traceback):
         try:
@@ -19,7 +18,6 @@ class ClosingConnection(sqlite3.Connection):
 
 
 def get_connection() -> sqlite3.Connection:
-    """Open the project database with named rows and foreign keys enabled."""
     connection = sqlite3.connect(DB_PATH, factory=ClosingConnection)
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys = ON")
@@ -27,13 +25,11 @@ def get_connection() -> sqlite3.Connection:
 
 
 def initialize_database() -> None:
-    """Create the schema if needed, using the project's SQL schema file."""
     with get_connection() as connection:
         connection.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
 
 
 def load_queries() -> dict[str, str]:
-    """Read named SQL statements from queries.sql."""
     text = QUERIES_PATH.read_text(encoding="utf-8")
     queries = {}
     name = None

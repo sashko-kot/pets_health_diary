@@ -1,15 +1,13 @@
 from django.shortcuts import render
 
-from db.database import get_connection, load_queries
+from pets.models import Pet
+from records.models import HealthRecord
 
 
 def index(request):
-    query = load_queries()["total_counts"]
-    with get_connection() as connection:
-        counts = connection.execute(query).fetchone()
     context = {
-        "pet_count": counts["pet_count"],
-        "record_count": counts["record_count"],
+        "pet_count": Pet.objects.count(),
+        "record_count": HealthRecord.objects.count(),
     }
     return render(request, "homepage/index.html", context)
 
