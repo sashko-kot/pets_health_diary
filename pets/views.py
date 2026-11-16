@@ -1,11 +1,14 @@
 from datetime import date
 
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from db.database import get_connection, load_queries
 from models.owners import Owner
 from models.pets import Pet, format_weight
 from models.records import HealthRecord
+from pets.models import Pet as DjangoPet
+
+from .forms import PetForm
 
 
 def pets_list(request):
@@ -76,3 +79,30 @@ def pet_detail(request, pet_id):
         "records": records,
     }
     return render(request, "pets/pet_detail.html", context)
+
+
+def pet_create(request):
+    if request.method == "POST":
+        form = PetForm(request.POST)
+        if form.is_valid():
+            pet = form.save()
+            return redirect("pets:pet_detail", pet_id=pet.id)
+    else:
+        form = PetForm()
+    return render(request, "pets/pet_form.html", {"form": form, "is_edit": False})
+
+
+def pet_edit(request, pet_id):
+    pet = get_object_or_404(DjangoPet, pk=pet_id)
+    if request.method == "POST":
+        form = PetForm(request.POST, instance=pet)
+        if form.is_valid():
+            pet = form.save()
+            return redirect("pets:pet_detail", pet_id=pet.id)
+    else:
+        form = PetForm(instance=pet)
+    return render(
+        request,
+        "pets/pet_form.html",
+        {"form": form, "is_edit": True, "pet": pet},
+    )

@@ -25,9 +25,14 @@
             <dt class="col-sm-4">Вес</dt>
             <dd class="col-sm-8">{{ weight_display }}</dd>
         </dl>
-        <a href="{% url 'pets:pet_detail' pet.id %}" class="btn btn-outline-primary mt-3">
-            Карточка питомца
-        </a>
+        <div class="d-flex flex-wrap gap-2 mt-3">
+            <a href="{% url 'pets:pet_detail' pet.id %}" class="btn btn-outline-primary">
+                Карточка питомца
+            </a>
+            <a href="{% url 'records:record_edit' record.id %}" class="btn btn-primary">
+                Редактировать запись
+            </a>
+        </div>
     </article>
 {% else %}
     <section class="empty-state text-center py-5">

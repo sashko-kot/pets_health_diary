@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_edit %}Редактировать питомца{% else %}Добавить питомца{% endif %} | Дневник здоровья{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <div>
+        <p class="eyebrow mb-1">Форма питомца</p>
+        <h1 class="mb-0">{% if is_edit %}Редактирование питомца{% else %}Добавление питомца{% endif %}</h1>
+    </div>
+</div>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="mb-3">
+            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+                <div class="form-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+                <div class="text-danger small mt-1">{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endfor %}
+    <div class="d-flex gap-2 flex-wrap">
+        <button type="submit" class="btn btn-primary">
+            {% if is_edit %}Сохранить изменения{% else %}Добавить питомца{% endif %}
+        </button>
+        {% if is_edit and pet %}
+            <a href="{% url 'pets:pet_detail' pet.id %}" class="btn btn-outline-secondary">Отмена</a>
+        {% else %}
+            <a href="{% url 'pets:pets_list' %}" class="btn btn-outline-secondary">К списку</a>
+        {% endif %}
+    </div>
+</form>
+{% endblock %}

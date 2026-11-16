@@ -1,12 +1,15 @@
 from datetime import date
 from types import SimpleNamespace
 
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from db.database import get_connection, load_queries
 from models.owners import Owner
 from models.pets import format_weight
 from models.records import HealthRecord
+from records.models import HealthRecord as DjangoHealthRecord
+
+from .forms import HealthRecordForm
 
 
 def records_list(request):
@@ -89,3 +92,30 @@ def statistics(request):
         "symptom_statistics": symptom_stats,
         "owner_statistics": owner_stats,
     })
+
+
+def record_create(request):
+    if request.method == "POST":
+        form = HealthRecordForm(request.POST)
+        if form.is_valid():
+            record = form.save()
+            return redirect("records:record_detail", record_id=record.id)
+    else:
+        form = HealthRecordForm()
+    return render(request, "records/record_form.html", {"form": form, "is_edit": False})
+
+
+def record_edit(request, record_id):
+    record = get_object_or_404(DjangoHealthRecord, pk=record_id)
+    if request.method == "POST":
+        form = HealthRecordForm(request.POST, instance=record)
+        if form.is_valid():
+            record = form.save()
+            return redirect("records:record_detail", record_id=record.id)
+    else:
+        form = HealthRecordForm(instance=record)
+    return render(
+        request,
+        "records/record_form.html",
+        {"form": form, "is_edit": True, "record": record},
+    )

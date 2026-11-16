@@ -8,9 +8,12 @@
         <p class="eyebrow mb-1">Наши маленькие друзья</p>
         <h1 class="mb-0">Мои питомцы</h1>
     </div>
-    <span class="badge rounded-pill text-bg-primary">
-        Всего: {{ pets|length }}
-    </span>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="badge rounded-pill text-bg-primary">
+            Всего: {{ pets|length }}
+        </span>
+        <a href="{% url 'pets:pet_create' %}" class="btn btn-primary btn-sm">Добавить питомца</a>
+    </div>
 </div>
 <form method="get" class="row g-2 mb-4">
     <div class="col-sm-8 col-lg-6">

@@ -17,7 +17,11 @@
                 <p class="display-6 fw-semibold">{{ weight_display }}</p>
             </div>
         </div>
-        <div class="alert alert-info mb-0">
+        <div class="d-flex flex-wrap gap-2 mt-3">
+            <a href="{% url 'pets:pet_edit' pet.id %}" class="btn btn-outline-primary">Редактировать</a>
+            <a href="{% url 'records:record_create' %}" class="btn btn-primary">Добавить запись</a>
+        </div>
+        <div class="alert alert-info mb-0 mt-3">
             {{ pet.weight_status|default:"Оценка веса пока не указана." }}
         </div>
     </div>

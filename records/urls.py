@@ -7,7 +7,9 @@ app_name = "records"
 
 urlpatterns = [
     path("", views.records_list, name="records_list"),
+    path("create/", views.record_create, name="record_create"),
     path("search/", views.records_search, name="records_search"),
     path("statistics/", views.statistics, name="statistics"),
+    path("<int:record_id>/edit/", views.record_edit, name="record_edit"),
     path("<int:record_id>/", views.record_detail, name="record_detail"),
 ]
